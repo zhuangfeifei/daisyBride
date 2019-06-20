@@ -1,0 +1,221 @@
+<template>
+    <view id="join" wx:if="{{defaultImgUrl}}">
+
+        <view class="banner">
+            <image src="{{defaultImgUrl + 'banner.png'}}" mode="scaleToFill" lazy-load="false" />
+        </view>
+
+        <view class="analysis">
+            <h1>婚纱市场痛点分析</h1>
+            <view class="analysis_content">
+                <view class="analysis_content_">
+                    <view>铺货压力大，旧款难处理，没钱拿新款</view>
+                    <view>·云仓储概念，全国首创加盟期间拿货全免费，任意换款</view>
+                    <view>·加盟费用低，享用时间长\n</view>
+                    <view>·款式多，更新快，用过可换，签约时间内不限次数和价格</view>
+                </view>
+                <view wx:if="{{isShow}}" class="analysis_content_">
+                    <view>不会营销，成交艰难，没有专业知识支撑</view>
+                    <view>·全年一对一专业化营销指导</view>
+                    <view>·销售经验干货分享，助力门店业绩</view>
+                    <view>·提供接单图片和视频，素材微信号每日更新，方  便接单</view>
+                </view>
+                <view wx:if="{{isShow}}" class="analysis_content_">
+                    <view>盲目投资，推广经费不足，地推活动困难</view>
+                    <view>·实力团队定制化线上推广</view>
+                    <view>·品牌统一推广</view>
+                    <view>·线下铺货，线上公司推广</view>
+                </view>
+                <view wx:if="{{!isShow}}" class="analysis_content_more"><text @tap="tapShow">展开</text></view>
+            </view>
+        </view>
+
+        <view class="plan">
+            <h1>黛西新娘加盟方案</h1>
+            <view class="plan_swiper">
+                <swiper class="swiper" indicator-dots="{{false}}" autoplay="{{false}}" >
+                    <block wx:for="{{imgUrls}}" wx:key="{{index}}">
+                        <swiper-item class="swiper-item">
+                            <image src="{{defaultImgUrl + item}}" class="slide-image"/>
+                        </swiper-item>
+                    </block>
+                </swiper>
+                <view class="swiper_tip">
+                    <image src="/images/home/left.png" mode="scaleToFill" lazy-load="false" /> 
+                    <text>向左查看其它方案</text>
+                </view>
+            </view>
+        </view>
+
+        <view class="appointment">
+            <h1>加盟预约</h1>
+            <view class="appointment_">
+                <view>
+                    <text>姓名</text>
+                    <input type="text" bindinput="realname" value="{{realname}}" placeholder="写下您的姓名" placeholder-style="color:#CECECE;" />
+                </view>
+                <view>
+                    <text>电话</text>
+                    <input type="number" bindinput="phone" value="{{phone}}" placeholder="写下您的手机号码" placeholder-style="color:#CECECE;" />
+                </view>
+                <view>
+                    <text>预约时间</text>
+                    <input type="text" bindinput="ordertime" value="{{ordertime}}" placeholder="写下您想要到店的时间" placeholder-style="color:#CECECE;" />
+                </view>
+                <view class="submit {{isJoin ? 'active' : ''}}" @tap="submit">{{isJoin ? '预约完成' : '提交预约'}}</view>
+            </view>
+        </view>
+
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import 'wepy-async-function'
+
+@connect({
+    defaultImgUrl(state){
+        return state.counter.defaultImgUrl
+    },
+})
+    
+export default class Join extends wepy.page {
+    
+    config = {
+        navigationBarTitleText: '诚邀您的加入'
+    }
+    
+    components = {
+    
+    }
+    
+    data = {
+        isShow: false,
+        isJoin: false,
+        imgUrls: [ 'jlhy.png', 'ybhy.png', 'yyhy.png', 'qjd.png' ],
+        realname:'', phone:'', ordertime:'', 
+    }
+    
+    computed = {
+    
+    }
+    
+    methods = {
+        tapShow(){
+            this.isShow = true
+        },
+        realname(e){
+            this.realname = e.detail.value
+        },
+        phone(e){
+            this.phone = e.detail.value
+        },
+        ordertime(e){
+            this.ordertime = e.detail.value
+        },
+        submit(){
+            if(!this.data.isJoin){
+                if(this.data.phone.length == 11){
+                    let list = { realname: this.data.realname, phone: this.data.phone, ordertime: this.data.ordertime, unionId: wepy.getStorageSync('userinfo').unionid  }
+                    wepy.$Api.addAppoint(list).then(res =>{
+                        // console.log(res.data)
+                        if(res.data.code == 200){
+                            this.isJoin = true
+                            this.realname = ''
+                            this.phone = ''
+                            this.ordertime = ''
+                            this.$apply()
+                            wepy.showToast({
+                                title: '预约成功',
+                                icon: 'success',
+                                duration: 2000
+                            })
+                        }
+                    })
+                }else{
+                    wepy.showModal({
+                        title: '温馨提示',
+                        content: '手机号格式错误',
+                        success(res) {
+                            if (res.confirm) {
+                                
+                            } else if (res.cancel) {
+                                
+                            }
+                        }
+                    })
+                }
+            }
+        }
+    }
+    
+    onShow() {
+        this.realname = ''
+        this.phone = ''
+        this.ordertime = ''
+        this.isJoin = false
+    }
+}
+</script>
+
+<style lang='less'>
+#join{
+    width: 100%;
+}
+
+.banner{
+    width: 100%; height: 360rpx;
+    image{ width: 100%; height: 100%; }
+}
+
+h1{ font-size: 48rpx; line-height: 48rpx; }
+.analysis{
+    width: 100%; min-height: 757rpx; border-bottom: 2rpx solid #CCCACB; text-align: center; box-sizing: border-box; padding: 24rpx 40rpx 128rpx 40rpx; color: #626063;
+      .analysis_content{
+        width: 100%; background-color: #F1F1F2; margin-top: 64rpx;
+        .analysis_content_{
+            width: 100%; text-align: left; box-sizing: border-box; padding: 64rpx 59rpx; border-bottom: 2rpx solid #FFFFFF;
+            view:nth-child(1){ text-decoration: underline; margin-bottom: 42rpx; font-size: 30rpx; font-family:PingFang-SC-Medium; font-weight:500; }
+            view{ margin-bottom: 25rpx; line-height: 36rpx; font-size: 26rpx; }
+            view:last-child{ margin: 0; }
+        }
+        .analysis_content_more{
+            width: 100%; height: 80rpx; text-align: center;
+            text{ font-size: 24rpx; line-height: 80rpx; border: 2rpx solid #CCCACB; padding: 9rpx 47rpx; }
+        }
+    }
+}
+
+.plan{
+    width: 100%; height: 1298rpx; border-bottom: 2rpx solid #CCCACB; text-align: center; color: #626063; box-sizing: border-box; padding: 128rpx 40rpx;
+    .plan_swiper, .swiper{
+        width: 100%; height: 933rpx; margin-top: 63rpx; position: relative;
+        .swiper-item, image{ width: 100%; height: 933rpx; }
+        .swiper_tip{
+            width: 100%; position: absolute; bottom: 64rpx; left: 0; font-size: 24rpx; color: #626063;
+            image{ width: 20rpx; height: 20rpx; margin-right: 20rpx; }
+        }
+    }
+}
+
+.appointment{
+    width: 100%; height: 1033rpx; box-sizing: border-box; padding: 128rpx 40rpx; text-align: center; color: #626063;
+    .appointment_{
+        width: 100%; height: 668rpx; box-shadow:0px 0px 16rpx 0px rgba(0, 0, 0, 0.16); margin-top: 64rpx; 
+        box-sizing: border-box; padding: 60rpx; text-align: left;
+        view{
+            width: 100%; border-bottom: 2rpx solid #CCCACB; margin-bottom: 48rpx; font-size: 24rpx;
+            text{ font-family:PingFang-SC-Medium; font-weight:500; color: #626063; }
+            input{ width: 100%; margin: 20rpx 0 15rpx 0; color: #8E807D; font-size: 28rpx; }
+        }
+        .submit{
+            width: 260rpx; height: 80rpx; background-color: #676361; color: #FFFFFF; text-align: center; line-height: 80rpx; margin: 0 auto; font-size: 30rpx;
+        }
+        .active{
+            background-color: #CCCACB;
+        }
+    }
+}
+
+</style>

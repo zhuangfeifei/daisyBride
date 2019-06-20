@@ -1,0 +1,143 @@
+<template>
+    <view id="appointment" wx:if="{{defaultImgUrl}}">
+
+        <view class="appointment_title" style="background-image: url({{defaultImgUrl+'title_nav.png'}}); background-size: 100% 100%; background-repeat: no-repeat;">
+            <image src="{{userinfo.avatar}}" mode="scaleToFill" lazy-load="false" />
+            <text>\n{{userinfo.nickname}}</text>
+        </view>
+
+        <view class="appointment_">
+            <view>
+                <text>姓名</text>
+                <input type="text" bindinput="realname" value="{{realname}}" placeholder="写下您的姓名" placeholder-style="color:#CECECE;" />
+            </view>
+            <view>
+                <text>电话</text>
+                <input type="number" bindinput="phone" value="{{phone}}" placeholder="写下您的手机号码" placeholder-style="color:#CECECE;" />
+            </view>
+            <view>
+                <text>预约时间</text>
+                <input type="text" bindinput="ordertime" value="{{ordertime}}" placeholder="写下您想要到店的时间" placeholder-style="color:#CECECE;" />
+            </view>
+            <view class="submit {{isJoin ? 'active' : ''}}" @tap="submit">{{isJoin ? '预约完成' : '提交预约'}}</view>
+        </view>
+
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import 'wepy-async-function'
+
+@connect({
+    defaultImgUrl(state){
+        return state.counter.defaultImgUrl
+    },
+    userinfo(state){
+        return state.counter.userinfo || wepy.getStorageSync('userinfo')
+    },
+})
+    
+export default class Appointment extends wepy.page {
+    
+    config = {
+        navigationBarTitleText: '黛西新娘'
+    }
+    
+    components = {
+    
+    }
+    
+    data = {
+        realname:'', phone:'', ordertime:'', isJoin: false
+    }
+    
+    computed = {
+    
+    }
+    
+    methods = {
+        realname(e){
+            this.realname = e.detail.value
+        },
+        phone(e){
+            this.phone = e.detail.value
+        },
+        ordertime(e){
+            this.ordertime = e.detail.value
+        },
+        submit(){
+            if(!this.data.isJoin){
+                if(this.data.phone.length == 11){
+                    let list = { realname: this.data.realname, phone: this.data.phone, ordertime: this.data.ordertime, unionId: wepy.getStorageSync('userinfo').unionid  }
+                    wepy.$Api.addAppoint(list).then(res =>{
+                        // console.log(res.data)
+                        if(res.data.code == 200){
+                            this.isJoin = true
+                            this.realname = ''
+                            this.phone = ''
+                            this.ordertime = ''
+                            this.$apply()
+                            wepy.showToast({
+                                title: '预约成功',
+                                icon: 'success',
+                                duration: 2000
+                            })
+                        }
+                    })
+                }else{
+                    wepy.showModal({
+                        title: '温馨提示',
+                        content: '手机号格式错误',
+                        success(res) {
+                            if (res.confirm) {
+                                
+                            } else if (res.cancel) {
+                                // console.log('用户点击取消')
+                            }
+                        }
+                    })
+                }
+            }
+        }
+    }
+    
+    onShow() {
+        this.realname = ''
+        this.phone = ''
+        this.ordertime = ''
+        this.isJoin = false
+    }
+}
+</script>
+
+<style lang='less'>
+#appointment{
+    width: 100%; box-sizing: border-box;
+}
+
+.appointment_title{
+    width: 100%; height: 480rpx; text-align: center; padding-top: 64rpx; box-sizing: border-box;
+    image{ width: 193rpx; height: 193rpx; border-radius: 50%; }
+    text{ color: #FFFFFF; font-size: 36rpx; font-family:PingFang-SC-Bold; font-weight:bold; line-height: 48rpx; }
+}
+
+.appointment_{
+    width: calc(100% - 80rpx); height: 668rpx; background-color: #FFFFFF; position: absolute; top: 375rpx; left: 40rpx;
+    box-sizing: border-box; padding: 60rpx; text-align: left;
+    view{
+        width: 100%; border-bottom: 2rpx solid #CCCACB; margin-bottom: 48rpx; font-size: 24rpx;
+        text{ font-family:PingFang-SC-Medium; font-weight:500; color: #626063; }
+        input{ width: 100%; margin: 20rpx 0 15rpx 0; color: #8E807D; font-size: 28rpx; }
+    }
+    .submit{
+        width: 260rpx; height: 80rpx; background-color: #676361; color: #FFFFFF; 
+        text-align: center; line-height: 80rpx; margin: 0 auto; font-size: 30rpx; margin-top: 64rpx;
+    }
+    .active{
+        background-color: #CCCACB;
+    }
+}
+
+</style>

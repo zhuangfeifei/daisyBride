@@ -1,0 +1,199 @@
+<template>
+  <view id="index" wx:if="{{defaultImgUrl}}">
+
+    <!-- <view class="index_content" wx:if="{{isHide && defaultImgUrl}}"> -->
+      <view class="video">
+        <video wx:if="{{!isPlay}}" id="myVideo" src="{{defaultImgUrl + 'daisy.mp4'}}"></video>
+        <image wx:if="{{isPlay}}" @tap="play" src="{{defaultImgUrl + 'video.jpg'}}" mode="scaleToFill" lazy-load='false'/>
+        <image wx:if="{{isPlay}}" class="play" @tap="play" src="/images/home/inpay.png" mode="scaleToFill" lazy-load='false' />
+      </view>
+
+      <view class="title">
+        <image src="{{defaultImgUrl + 'title.png'}}" mode="scaleToFill" lazy-load='false'/>
+      </view>
+
+      <view class="display">
+        <image class="display_show" src='/images/home/show.png' />
+        <image src="{{defaultImgUrl + 'lily.png'}}" mode="aspectFill" lazy-load='false' />
+        <image src="{{defaultImgUrl + 'iraqis.png'}}" mode="aspectFill" lazy-load='false' />
+        <image src="{{defaultImgUrl + 'lover.png'}}" mode="aspectFill" lazy-load='false' />
+      </view>
+
+      <view class="invitation">
+        <image src="{{defaultImgUrl + 'invitation.png'}}" mode="scaleToFill" lazy-load='false' />
+        <view @tap="linkTo" class="details">详情了解</view>
+      </view>
+
+      <view class="contact">
+        <image class="contact_back" src="{{defaultImgUrl + 'contact.png'}}" mode="scaleToFill" lazy-load='false' />
+        <view class="callPhone" @tap="callPhone">拨打电话：13913196279</view>
+        <view class="qrcode">
+          <image src="{{defaultImgUrl + 'cx.jpg'}}" @tap="click" data-src="{{defaultImgUrl + 'cx.jpg'}}" mode="scaleToFill" lazy-load='false' />
+          <text>微信咨询</text>
+        </view>
+        <view class="address">
+          <text>苏州市相城区元和街道华元路818号\n迈家众创四楼A8408</text>
+          <view @tap="toaddres">导航</view>
+        </view>
+      </view>
+    <!-- </view> -->
+
+    <!-- <view class="index_loading"></view> -->
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import 'wepy-async-function'
+
+@connect({
+  defaultImgUrl(state){
+    return state.counter.defaultImgUrl
+  },
+  videoImgUrl(state){
+    return state.counter.videoImgUrl
+  },
+})
+  
+export default class Index extends wepy.page {
+  
+  config = {
+    navigationBarTitleText: '黛西新娘'
+  }
+  
+  components = {
+  
+  }
+  
+  data = {
+    displayList:'', isPlay: true, isHide: false
+  }
+  
+  computed = {
+    
+  }
+  
+  methods = {
+    linkTo(){
+      this.$navigate({url:"./join"})
+    },
+    callPhone(){
+      wx.makePhoneCall({
+        phoneNumber: '13913196279' 
+      })
+    },
+    //导航
+    toaddres(e) {
+      wx.getLocation({ 
+        type: 'wgs84', 
+        success: function (res) {
+          wx.openLocation({ 
+            latitude: 31.3741210000, //要去的纬度
+            longitude: 120.6296690000, //要去的经度
+            name: "迈家众创",
+            address: '华元路方圆里商业广场迈家众创'
+          })
+        }
+      })
+    },
+    click(e){
+      var current = e.target.dataset.src;
+      wx.previewImage({
+        current: current, 
+        urls: [ current ] 
+      })
+    },
+    play(){
+      this.isPlay = false
+      let myVideo = wx.createVideoContext('myVideo')
+      myVideo.play()
+      this.$apply()
+    }
+  }
+  
+  onLoad() {
+    // this.methods.asd()
+    // console.log(wepy.$store.getState())
+    // setTimeout(()=>{
+      // this.isHide = true
+      // this.$apply()
+    // },1000)
+  }
+}
+</script>
+
+<style lang='less'>
+#index{
+  width: 100%; box-sizing: border-box; padding-bottom: 128rpx;
+}
+.index_content{
+  width: 100%;
+}
+.index_loading{
+  width: 100%; height: 100%;
+}
+
+
+.video{
+  width: 100%; height: 422rpx; background-color: black; position: relative;
+  video{
+    width: 100%; height: 100%; z-index: 1;
+  }
+  image{
+    width: 100%; height: 100%; position: absolute; left: 0; top: 0; z-index: 10;
+  }
+  .play{
+    width: 98rpx; height: 98rpx; position: absolute; left: calc(50% - 49rpx); top: calc(211rpx - 49rpx);
+  }
+}
+
+.title{
+  width: 100%; height: 715rpx;
+  image{ width: 100%; height: 100%; }
+}
+
+.display{
+  width: 100%; border-bottom: 2rpx solid #CCCACB; text-align: center;
+  padding: 60rpx 40rpx; padding-bottom: 126rpx; box-sizing: border-box; 
+  .display_show{ 
+    width: 142rpx; height: 34rpx;
+  }
+  image{
+    width: 100%; height: 1145rpx; margin-top: 62rpx;
+  }
+}
+
+.invitation{
+  width: 100%; height: 1068rpx; display: flex; padding: 0 40rpx; align-items: center; box-sizing: border-box; border-bottom: 2rpx solid #CCCACB; position: relative;
+  image{
+    width: 100%; height: 812rpx;
+  }
+  .details{
+    width: 260rpx; height: 80rpx; text-align: center; line-height: 80rpx; border: 2rpx solid #CCCACB; 
+    position: absolute; bottom: 192rpx; left: 104rpx; color: #FFFFFF; font-size: 30rpx;
+  }
+}
+
+.contact{
+  width: calc(100% - 80rpx); height: 1485rpx; margin: 128rpx 40rpx; margin-bottom: 0; position: relative; text-align: center; color: #626063;
+  .contact_back{ 
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+  }
+  .callPhone{
+    width: 542rpx; height: 100rpx; background-color: #FFFFFF; line-height: 100rpx; position: absolute; top: 619rpx; left: calc((100% - 542rpx) / 2);
+  }
+  .qrcode{
+    width: 221rpx; position: absolute; top: 777rpx; left: calc((100% - 221rpx) / 2); font-size: 24rpx; line-height: 60rpx;
+    image{ width: 100%; height: 221rpx; }
+  }
+  .address{
+    width: 100%; height: 232rpx; position: absolute; bottom: 0; left: 0; font-size: 30rpx; line-height: 48rpx;
+    view{
+      width: 140rpx; height: 40rpx; border: 2rpx solid #CCCACB; line-height: 40rpx; font-size: 24rpx; margin-left: calc((100% - 140rpx) / 2);
+      margin-top: 30rpx;
+    }
+  }
+}
+</style>

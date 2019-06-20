@@ -1,0 +1,105 @@
+<template>
+    <view id="product_details" wx:if="{{product_details}}">
+
+        <scroll-view class="scroll-view" scroll-x scroll-with-animation>
+            <view class="scroll_list" style="width: {{product_details.list_pic.length * (554 + 40) + 40}}rpx">
+                <image wx:for="{{product_details.list_pic}}" wx:key="{{index}}" src="{{imgUrl + item}}" mode="aspectFill" lazy-load="false" />
+            </view>
+        </scroll-view>
+
+        <view class="product_join">
+            <h1>{{product_details.goods_name}}</h1>
+            <view class="specifications">{{product_details.description}}</view>
+            <view class="product_join_btn" @tap="join">预约加盟</view>
+        </view>
+
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import 'wepy-async-function'
+
+@connect({
+    imgUrl(state){
+        return state.counter.imgUrl
+    },
+})
+    
+export default class Product_details extends wepy.page {
+    
+    config = {
+        navigationBarTitleText: '产品详情'
+    }
+    
+    components = {
+    
+    }
+    
+    data = {
+        product_details:''
+    }
+    
+    computed = {
+        
+    }
+    
+    methods = {
+        join(){
+            wx.switchTab({url:'../appointment/appointment'})
+        }
+    }
+
+    events = {
+        
+    }
+    
+    onLoad(params) {
+        wepy.$Api.clothDetail({ clothId: params.id }).then(res=>{
+            // console.log(res.data)
+            if(res.data.code == 200){
+                let list_pic = res.data.data.goods_pic.split(',')
+                res.data.data.list_pic = list_pic
+                this.product_details = res.data.data
+                this.$apply()
+            }
+        })
+    }
+
+}
+</script>
+
+<style lang='less'>
+#product_details{
+    width: 100%;
+}
+
+.scroll-view{
+    width: 100%; height: 830rpx; margin-bottom: 49rpx;
+    .scroll_list{
+        width: 100%; height: 100%; padding: 0 40rpx; box-sizing: border-box; display: flex; justify-content: space-between; 
+        image{ width: 554rpx; height: 100%; }
+    }
+}
+
+.product_join{
+    width: 100%; text-align: center; color: #626063; 
+    h1{ font-size: 36rpx; font-family:PingFang-SC-Medium; font-weight:500; }
+    .specifications{ 
+        width: 80%; max-height: 60rpx; margin: 0 auto; font-size: 26rpx; margin-top: 10rpx; line-height: 30rpx;
+        display: -webkit-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        white-space: normal !important;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    .product_join_btn{
+        width: 260rpx; height: 80rpx; text-align: center; line-height: 80rpx; background-color: #676361; margin: 0 auto;
+        color: #ffffff; margin-top: 60rpx;
+    }
+}
+
+</style>

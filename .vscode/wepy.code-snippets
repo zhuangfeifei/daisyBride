@@ -1,0 +1,62 @@
+{
+	"wepy-page": {
+	  "prefix": "wepy",
+	  "body": [
+		"<template>",
+		"\t<view></view>",
+		"</template>\n",
+		"<script>",
+		"import wepy from 'wepy'",
+		"import { connect } from 'wepy-redux'",
+		"import 'wepy-async-function'",
+		"$3",
+		"@connect({",
+		"\t",
+		"})",
+		"\t$3",
+		"export default class ${1:${TM_FILENAME_BASE/([a-zA-Z])(.*)/${1:/upcase}$2/g}} extends wepy.${2|page,component,app|} {",
+		"\t$3",
+		"\tconfig = {",
+		"\t\tnavigationBarTitleText: ''",
+		"\t}",
+		"\t$3",
+		"\tcomponents = {",
+		"\t$3",
+		"\t}",
+		"\t$3",
+		"\tdata = {",
+		"\t$3",
+		"\t}",
+		"\t$3",
+		"\tcomputed = {",
+		"\t$3",
+		"\t}",
+		"\t$3",
+		"\tmethods = {",
+		"\t$3",
+		"\t}",
+		"\t$3",
+		"\tonLoad() {",
+		"\t$3",
+		"\t}",
+		"}",
+		"</script>\n",
+		"<style lang='less'>\n",
+		"</style>\n"
+	  ]
+	},
+	"Single Element": {
+	  "prefix": "singletag",
+	  "body": [
+		"<$1 />\n"
+	  ]
+	},
+	"wepy-config": {
+	  "prefix": "configwepy",
+	  "body": [
+		"config = {",
+		"\tnavigationBarTitleText: '$1'",
+		"}",
+	  ]
+	}
+  }
